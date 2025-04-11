@@ -35,11 +35,11 @@ public class ConsoleUI {
 
             try {
                 choice = sc.nextInt();
-                sc.nextLine(); // съедаем \n
+                sc.nextLine();
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please enter a number from 1 to 9.\n");
-                sc.nextLine(); // очистка буфера
-                continue; // снова покажем меню
+                sc.nextLine();
+                continue;
             }
 
             switch (choice) {
@@ -114,7 +114,7 @@ public class ConsoleUI {
                                         System.out.println("Invalid choice. Try again.");
                                     } catch (InputMismatchException e) {
                                         System.out.println("Please enter a number (1 or 2).");
-                                        sc.nextLine(); // очистка буфера
+                                        sc.nextLine();
                                     }
                                 }
 
@@ -147,20 +147,20 @@ public class ConsoleUI {
                                                 }
                                             } catch (InputMismatchException e) {
                                                 System.out.println("Please enter a valid number.");
-                                                sc.nextLine(); // очистка буфера
+                                                sc.nextLine();
                                             }
                                         }
                                     }
                                 }
 
-                                break; // выходим из while(true) после редактирования
+                                break;
                             } else {
                                 System.out.println("Invalid index. Try again.\n");
                             }
 
                         } catch (InputMismatchException e) {
                             System.out.println("Please enter a valid number.");
-                            sc.nextLine(); // очистка буфера
+                            sc.nextLine();
                         }
                     }
                 }
