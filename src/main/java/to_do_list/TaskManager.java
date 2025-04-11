@@ -19,10 +19,6 @@ public class TaskManager {
     }
 
     public void removeTask(int index) {
-        if (index >= taskList.size() || index < 0) {
-            System.out.println("Invalid index. Try again.");
-            return;
-        }
         taskList.remove(index);
     }
 
