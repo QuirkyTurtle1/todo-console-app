@@ -21,23 +21,6 @@ public class TaskManager {
         taskList.remove(index);
     }
 
-    public void editTask(int index, String newName, int newPriority) {
-        if (index >= taskList.size() || index < 0) {
-            System.out.println("Invalid index. Try again.");
-            return;
-        }
-        if (newName == null || newName.trim().isEmpty()) {
-            System.out.println("Task name cannot be empty");
-            return;
-        }
-        if (newPriority < 1 || newPriority > 10) {
-            System.out.println("Priority must be between 1 and 10.");
-            return;
-        }
-        Task editingTask = taskList.get(index);
-        editingTask.setName(newName);
-        editingTask.setPriority(newPriority);
-    }
 
     public void updateStatus(int index, Status newStatus) {
         if (index >= taskList.size() || index < 0) {
