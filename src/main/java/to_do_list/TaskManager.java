@@ -23,16 +23,6 @@ public class TaskManager {
 
 
     public void updateStatus(int index, Status newStatus) {
-        if (index >= taskList.size() || index < 0) {
-            System.out.println("Invalid index. Try again.");
-            return;
-        }
-        if (!newStatus.equals(Status.COMPLETED) &&
-                !newStatus.equals(Status.IN_PROGRESS) &&
-                !newStatus.equals(Status.NOT_COMPLETED)) {
-            System.out.println("Status is not correct");
-            return;
-        }
         if (newStatus.equals(Status.COMPLETED)) {
             Task task = taskList.get(index);
             task.setStatus(Status.COMPLETED);
