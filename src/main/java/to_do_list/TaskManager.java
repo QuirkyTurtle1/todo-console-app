@@ -48,10 +48,6 @@ public class TaskManager {
     }
 
     public void printAllTasks() {
-        if (taskList.isEmpty()) {
-            System.out.println("Task list is empty");
-            return;
-        }
         for (int i = 0; i < taskList.size(); i++) {
             System.out.println((i + 1) + ". " + taskList.get(i));
 
