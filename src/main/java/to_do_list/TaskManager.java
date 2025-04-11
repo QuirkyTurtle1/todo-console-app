@@ -79,5 +79,8 @@ public class TaskManager {
 
         }
     }
+    public List<Task> getTaskList() {
+        return taskList;
+    }
 
 }
