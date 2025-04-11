@@ -15,7 +15,7 @@ public class TaskManager {
 
     public void addTask(Task task) {
         taskList.add(task);
-        System.out.println("Task added!");
+        System.out.println("Task added!\n");
     }
 
     public void removeTask(int index) {
