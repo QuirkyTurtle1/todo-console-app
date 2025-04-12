@@ -202,7 +202,7 @@ public class ConsoleUI {
                 }
                 default -> System.out.println("Please enter a number from 1 to 9.\n");
 
-            }break;
+            }
 
         }
     }
