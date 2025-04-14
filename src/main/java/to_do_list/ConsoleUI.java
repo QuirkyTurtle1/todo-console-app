@@ -46,10 +46,10 @@ public class ConsoleUI {
             case 2 -> deleteTaskUI();
             case 3 -> editTaskUI();
             case 4 -> showAllTasksUI();
-            case 5 -> filterTasksUI();
-            case 6 -> findTaskUI();
+//            case 5 -> filterTasksUI();
+//            case 6 -> findTaskUI();
             case 7 -> changeTaskStatusUI();
-            case 8 -> showStatisticsUI();
+//            case 8 -> showStatisticsUI();
             case 9 -> {
                 System.out.println("Exiting the program. Goodbye!");
                 System.exit(0);
