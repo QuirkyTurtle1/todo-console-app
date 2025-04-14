@@ -188,7 +188,10 @@ public class ConsoleUI {
                                     Status newStatus = Status.valueOf(input.trim().toUpperCase());
                                     Task updatedTask = taskList.get(index);
                                     manager.updateStatus(index, newStatus);
-                                    System.out.println("\nTask updated:\n" + updatedTask + "\n");
+                                    System.out.println("\nTask updated:");
+                                    System.out.println("Name: " + updatedTask.getName());
+                                    System.out.println("Priority: " + updatedTask.getPriority());
+                                    System.out.println("Status: " + newStatus.getDescription() + "\n");
                                     break;
                                 } catch (IllegalArgumentException e) {
                                     System.out.println("Invalid status. Try again.\n");
