@@ -3,8 +3,10 @@ package to_do_list;
 
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Task {
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private String name;
     private int priority;
     private LocalDateTime creationTime;
@@ -60,10 +62,17 @@ public class Task {
 
     @Override
     public String toString() {
-        return name + " | Priority: " + priority +
-                " | Status: " + status +
-                " | Creation time: " + creationTime +
-                " | Execution time: " + (executionTime != null ? executionTime : "None");
+        String creation = creationTime != null
+                ? creationTime.format(DATE_TIME_FORMATTER)
+                : "None";
+
+        String execution = executionTime != null
+                ? executionTime.format(DATE_TIME_FORMATTER)
+                : "None";
+        return name + " | Priority: " + priority
+                + " | Status: " + status
+                + " | Creation time: " + creation
+                + " | Execution time: " + execution;
     }
 }
 
