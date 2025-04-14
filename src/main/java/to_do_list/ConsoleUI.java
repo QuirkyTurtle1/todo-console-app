@@ -16,8 +16,7 @@ public class ConsoleUI {
 
 
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        TaskManager manager = new TaskManager();
+       
         System.out.println("Welcome to the \"Task Management Application\"!\n");
         while (true) {
             System.out.println("1. Add a task");
