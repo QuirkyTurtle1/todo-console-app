@@ -1,6 +1,6 @@
 package to_do_list.comparators;
 
-import to_do_list.Task ;
+import to_do_list.model.Task;
 
 import java.util.Comparator;
 

@@ -1,5 +1,8 @@
-package to_do_list;
+package to_do_list.service;
 
+
+import to_do_list.model.Status;
+import to_do_list.model.Task;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

@@ -1,4 +1,7 @@
-package to_do_list;
+package to_do_list.util;
+
+import to_do_list.model.Task;
+import to_do_list.service.TaskManager;
 
 import java.util.List;
 

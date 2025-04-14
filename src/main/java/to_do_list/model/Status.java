@@ -1,4 +1,4 @@
-package to_do_list;
+package to_do_list.model;
 
 public enum Status {
     NOT_COMPLETED("Не выполнено"),
