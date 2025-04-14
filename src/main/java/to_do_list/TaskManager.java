@@ -40,7 +40,6 @@ public class TaskManager {
     public void printAllTasks() {
         for (int i = 0; i < taskList.size(); i++) {
             System.out.println((i + 1) + ". " + taskList.get(i));
-
         }
     }
     public List<Task> getTaskList() {
