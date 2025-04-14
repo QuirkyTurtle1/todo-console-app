@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleUI {
+    public static final Scanner sc = new Scanner(System.in);
+    public static final TaskManager manager = new TaskManager();
+
     public static boolean checkAndWarnIfListEmpty(TaskManager manager) {
         if (InputValidator.isTaskListEmpty(manager)) {
             System.out.println("Task list is empty, please add some tasks\n");
@@ -16,7 +19,7 @@ public class ConsoleUI {
 
 
     public static void main(String[] args) {
-       
+
         System.out.println("Welcome to the \"Task Management Application\"!\n");
         while (true) {
             System.out.println("1. Add a task");
