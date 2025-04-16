@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleUI {
-    public static final Scanner sc = new Scanner(System.in);
-    public static final TaskManager manager = new TaskManager();
+    public  final Scanner sc = new Scanner(System.in);
+    public  final TaskManager manager = new TaskManager();
 
     public void run() {
         System.out.println("Welcome to the \"Task Management Application\"!\n");
