@@ -14,7 +14,7 @@ public class ConsoleUI {
     public static final Scanner sc = new Scanner(System.in);
     public static final TaskManager manager = new TaskManager();
 
-    public static void main(String[] args) {
+    public void run() {
         System.out.println("Welcome to the \"Task Management Application\"!\n");
         while (true) {
             printMenu();
@@ -23,7 +23,7 @@ public class ConsoleUI {
         }
     }
 
-    private static void printMenu() {
+    private  void printMenu() {
         System.out.println("1. Add a task");
         System.out.println("2. Delete a task");
         System.out.println("3. Edit a task");
@@ -36,7 +36,7 @@ public class ConsoleUI {
         System.out.print("Enter your choice: ");
     }
 
-    private static int readMenuChoice() {
+    private  int readMenuChoice() {
         try {
             int choice = sc.nextInt();
             sc.nextLine();
@@ -48,7 +48,7 @@ public class ConsoleUI {
         }
     }
 
-    private static void handleChoice(int choice) {
+    private  void handleChoice(int choice) {
         switch (choice) {
             case 1 -> addTaskUI();
             case 2 -> deleteTaskUI();
@@ -66,21 +66,21 @@ public class ConsoleUI {
         }
     }
 
-    private static void showStatisticsUI() {
+    private  void showStatisticsUI() {
         return;
     }
 
-    private static void findTaskUI() {
+    private  void findTaskUI() {
         return;
 
     }
 
-    private static void filterTasksUI() {
+    private  void filterTasksUI() {
         return;
     }
 
 
-    private static void addTaskUI() {
+    private  void addTaskUI() {
         System.out.print("Enter task name: ");
         String name = sc.nextLine();
         int priority;
@@ -105,7 +105,7 @@ public class ConsoleUI {
         System.out.println("Task added!\n");
     }
 
-    private static void deleteTaskUI() {
+    private  void deleteTaskUI() {
         if (checkAndWarnIfListEmpty(manager)) {
             return;
         }
@@ -126,7 +126,7 @@ public class ConsoleUI {
     }
 
 
-    private static int getTaskIndexFromUser() {
+    private  int getTaskIndexFromUser() {
         try {
             int index = sc.nextInt() - 1;
             sc.nextLine();
@@ -140,7 +140,7 @@ public class ConsoleUI {
 
     }
 
-    private static void editTaskUI() {
+    private  void editTaskUI() {
         if (checkAndWarnIfListEmpty(manager)) {
             return;
         }
@@ -161,7 +161,7 @@ public class ConsoleUI {
         }
     }
 
-    private static void handleEditChoice(Task taskToEdit) {
+    private  void handleEditChoice(Task taskToEdit) {
         while (true) {
             System.out.println("\nWhat do you want to edit?");
             System.out.println("1. Task name");
@@ -174,7 +174,7 @@ public class ConsoleUI {
         }
     }
 
-    private static int getEditChoice() {
+    private  int getEditChoice() {
         while (true) {
             System.out.print("Enter your choice: ");
             try {
@@ -189,7 +189,7 @@ public class ConsoleUI {
         }
     }
 
-    private static void renameTask(Task taskToEdit) {
+    private  void renameTask(Task taskToEdit) {
         while (true) {
             System.out.print("Enter new name: ");
             String newName = sc.nextLine();
@@ -203,7 +203,7 @@ public class ConsoleUI {
         }
     }
 
-    private static void updatePriority(Task taskToEdit) {
+    private  void updatePriority(Task taskToEdit) {
         while (true) {
             System.out.print("Enter new priority: ");
             try {
@@ -226,7 +226,7 @@ public class ConsoleUI {
 
 
 
-private static void showAllTasksUI() {
+private  void showAllTasksUI() {
     if (checkAndWarnIfListEmpty(manager)) {
         return;
     }
@@ -235,7 +235,7 @@ private static void showAllTasksUI() {
     System.out.println();
 }
 
-private static void changeTaskStatusUI() {
+private  void changeTaskStatusUI() {
     if (checkAndWarnIfListEmpty(manager)) {
         return;
     }
@@ -268,13 +268,14 @@ private static void changeTaskStatusUI() {
     }
 }
 
-public static boolean checkAndWarnIfListEmpty(TaskManager manager) {
+public  boolean checkAndWarnIfListEmpty(TaskManager manager) {
     if (InputValidator.isTaskListEmpty(manager)) {
         System.out.println("Task list is empty, please add some tasks\n");
         return true;
     }
     return false;
 }
+
 
 }
 
