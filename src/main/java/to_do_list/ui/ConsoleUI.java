@@ -231,7 +231,10 @@ private  void showAllTasksUI() {
         return;
     }
     System.out.println("All tasks: ");
-    manager.printAllTasks();
+    List<Task> taskList = manager.getTaskList();
+    for (int i = 0; i < taskList.size(); i++) {
+        System.out.println((i + 1) + ". " + taskList.get(i));
+    }
     System.out.println();
 }
 
