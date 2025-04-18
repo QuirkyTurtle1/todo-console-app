@@ -1,6 +1,8 @@
 package to_do_list.ui;
 
 
+import to_do_list.comparators.TaskDateComparator;
+import to_do_list.comparators.TaskPriorityComparator;
 import to_do_list.util.InputValidator;
 import to_do_list.model.Status;
 import to_do_list.model.Task;
@@ -8,11 +10,12 @@ import to_do_list.service.TaskManager;
 
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class ConsoleUI {
-    public  final Scanner sc = new Scanner(System.in);
-    public  final TaskManager manager = new TaskManager();
+    public final Scanner sc = new Scanner(System.in);
+    public final TaskManager manager = new TaskManager();
 
     public void run() {
         System.out.println("Welcome to the \"Task Management Application\"!\n");
@@ -23,12 +26,12 @@ public class ConsoleUI {
         }
     }
 
-    private  void printMenu() {
+    private void printMenu() {
         System.out.println("1. Add a task");
         System.out.println("2. Delete a task");
         System.out.println("3. Edit a task");
         System.out.println("4. Show all tasks");
-        System.out.println("5. Filter tasks by status");
+        System.out.println("5. Filter tasks");
         System.out.println("6. Find task by keyword");
         System.out.println("7. Change task status");
         System.out.println("8. Show statistics");
@@ -36,7 +39,7 @@ public class ConsoleUI {
         System.out.print("Enter your choice: ");
     }
 
-    private  int readMenuChoice() {
+    private int readMenuChoice() {
         try {
             int choice = sc.nextInt();
             sc.nextLine();
@@ -48,7 +51,7 @@ public class ConsoleUI {
         }
     }
 
-    private  void handleChoice(int choice) {
+    private void handleChoice(int choice) {
         switch (choice) {
             case 1 -> addTaskUI();
             case 2 -> deleteTaskUI();
@@ -66,21 +69,57 @@ public class ConsoleUI {
         }
     }
 
-    private  void showStatisticsUI() {
-        return;
+    private void showStatisticsUI() {
+        if (checkAndWarnIfListEmpty(manager)) {
+            return;
+        }
+        Map<Status, Long> counters = manager.countByStatus();
+        double avgPriority           = manager.averagePriority();
+        Map<Status, List<Task>> map  = manager.groupByStatus();
+        System.out.println("\nTask statistics:");
+        for (Status s : Status.values()) {
+            long count = counters.getOrDefault(s, 0L);
+            System.out.printf("- %-13s: %d%n", s.getDescription(), count);
+        }
+        System.out.printf("%nAverage priority: %.1f%n%n", avgPriority);
+        for (Status s : Status.values()) {
+            List<Task> list = map.getOrDefault(s, List.of());
+            System.out.println(s.getDescription() + " (" + list.size() + "):");
+            if (list.isEmpty()) {
+                System.out.println("  -- no tasks --");
+            } else {
+                for (int i = 0; i < list.size(); i++) {
+                    System.out.println("  " + (i + 1) + ". " + list.get(i));
+                }
+            }
+            System.out.println();
+        }
     }
 
-    private  void findTaskUI() {
-        return;
-
+    private void findTaskUI() {
+        if (checkAndWarnIfListEmpty(manager)) {
+            return;
+        }
+        System.out.println("Enter keyword to search: ");
+        String keyword = sc.nextLine().trim();
+        if (keyword.isEmpty()) {
+            System.out.println("Keyword cannot be empty\n");
+            return;
+        }
+        List<Task> foundTask = manager.searchByKeyword(keyword);
+        if (foundTask.isEmpty()) {
+            System.out.println("No tasks found for \"" + keyword + "\".\n");
+        } else {
+            System.out.println("\nTasks containing \"" + keyword + "\":");
+            for (int i = 0; i < foundTask.size(); i++) {
+                System.out.println((i + 1) + ". " + foundTask.get(i));
+            }
+            System.out.println();
+        }
     }
 
-    private  void filterTasksUI() {
-        return;
-    }
 
-
-    private  void addTaskUI() {
+    private void addTaskUI() {
         System.out.print("Enter task name: ");
         String name = sc.nextLine();
         int priority;
@@ -105,7 +144,7 @@ public class ConsoleUI {
         System.out.println("Task added!\n");
     }
 
-    private  void deleteTaskUI() {
+    private void deleteTaskUI() {
         if (checkAndWarnIfListEmpty(manager)) {
             return;
         }
@@ -126,7 +165,7 @@ public class ConsoleUI {
     }
 
 
-    private  int getTaskIndexFromUser() {
+    private int getTaskIndexFromUser() {
         try {
             int index = sc.nextInt() - 1;
             sc.nextLine();
@@ -140,7 +179,7 @@ public class ConsoleUI {
 
     }
 
-    private  void editTaskUI() {
+    private void editTaskUI() {
         if (checkAndWarnIfListEmpty(manager)) {
             return;
         }
@@ -161,20 +200,18 @@ public class ConsoleUI {
         }
     }
 
-    private  void handleEditChoice(Task taskToEdit) {
-        while (true) {
-            System.out.println("\nWhat do you want to edit?");
-            System.out.println("1. Task name");
-            System.out.println("2. Task priority");
-            int editChoice = getEditChoice();
-            switch (editChoice) {
-                case 1 -> renameTask(taskToEdit);
-                case 2 -> updatePriority(taskToEdit);
-            }
+    private void handleEditChoice(Task taskToEdit) {
+        System.out.println("\nWhat do you want to edit?");
+        System.out.println("1. Task name");
+        System.out.println("2. Task priority");
+        int editChoice = getChoiceFrom1To2();
+        switch (editChoice) {
+            case 1 -> renameTask(taskToEdit);
+            case 2 -> updatePriority(taskToEdit);
         }
     }
 
-    private  int getEditChoice() {
+    private int getChoiceFrom1To2() {
         while (true) {
             System.out.print("Enter your choice: ");
             try {
@@ -189,7 +226,7 @@ public class ConsoleUI {
         }
     }
 
-    private  void renameTask(Task taskToEdit) {
+    private void renameTask(Task taskToEdit) {
         while (true) {
             System.out.print("Enter new name: ");
             String newName = sc.nextLine();
@@ -203,81 +240,155 @@ public class ConsoleUI {
         }
     }
 
-    private  void updatePriority(Task taskToEdit) {
-        while (true) {
+    private void updatePriority(Task taskToEdit) {
             System.out.print("Enter new priority: ");
+            int newPriority = readValidPriority();
+            taskToEdit.setPriority(newPriority);
+            System.out.println("\nPriority updated:\n" + taskToEdit + "\n");
+    }
+
+    private int readValidPriority() {
+        while (true) {
             try {
-                int newPriority = sc.nextInt();
+                int input = sc.nextInt();
                 sc.nextLine();
-                if (InputValidator.isPriorityValid(newPriority)) {
-                    taskToEdit.setPriority(newPriority);
-                    System.out.println("\nPriority updated:\n" + taskToEdit + "\n");
-                    break;
+                if (InputValidator.isPriorityValid(input)) {
+                    return input;
                 } else {
-                    System.out.println("Invalid priority. Try again.\n");
+                    System.out.println("Priority must be between 1 and 10. Try again: \n");
                 }
             } catch (InputMismatchException e) {
-                System.out.println("Please enter a valid number.");
+                System.out.println("Invalid input. Please enter a number: ");
                 sc.nextLine();
             }
         }
     }
 
 
-
-
-private  void showAllTasksUI() {
-    if (checkAndWarnIfListEmpty(manager)) {
-        return;
-    }
-    System.out.println("All tasks: ");
-    List<Task> taskList = manager.getTaskList();
-    for (int i = 0; i < taskList.size(); i++) {
-        System.out.println((i + 1) + ". " + taskList.get(i));
-    }
-    System.out.println();
-}
-
-private  void changeTaskStatusUI() {
-    if (checkAndWarnIfListEmpty(manager)) {
-        return;
-    }
-    while (true) {
-        System.out.print("Enter the number of the task to update status: ");
-        int index = sc.nextInt() - 1;
-        sc.nextLine();
-        List<Task> taskList = manager.getTaskList();
-        if (InputValidator.isIndexValid(index, taskList)) {
-            while (true) {
-                System.out.print("Enter new status (NOT_COMPLETED, IN_PROGRESS, COMPLETED): ");
-                String input = sc.nextLine();
-                try {
-                    Status newStatus = Status.valueOf(input.trim().toUpperCase());
-                    Task updatedTask = taskList.get(index);
-                    manager.updateStatus(index, newStatus);
-                    System.out.println("\nTask updated:");
-                    System.out.println("Name: " + updatedTask.getName());
-                    System.out.println("Priority: " + updatedTask.getPriority());
-                    System.out.println("Status: " + newStatus.getDescription() + "\n");
-                    break;
-                } catch (IllegalArgumentException e) {
-                    System.out.println("Invalid status. Try again.\n");
-                }
+    private void showAllTasksUI() {
+        if (checkAndWarnIfListEmpty(manager)) {
+            return;
+        }
+        System.out.println("\nShow all tasks with sorting:");
+        System.out.println("1. By priority (descending)");
+        System.out.println("2. By date (ascending)");
+        int choice = getChoiceFrom1To2();
+        List<Task> sortedList = manager.getTaskList();
+        switch (choice) {
+            case 1 -> sortedList.sort(new TaskPriorityComparator());
+            case 2 -> sortedList.sort(new TaskDateComparator());
+            default -> {
+                System.out.println("Invalid choice. Try again.");
+                return;
             }
-            break;
-        } else {
-            System.out.println("Invalid index. Try again.\n");
+        }
+        System.out.println("\n Sorted tasks:");
+        for (int i = 0; i < sortedList.size(); i++) {
+            System.out.println((i + 1) + ". " + sortedList.get(i));
+        }
+        System.out.println();
+    }
+
+    private void filterTasksUI() {
+        if (checkAndWarnIfListEmpty(manager)) {
+            return;
+        }
+        System.out.println("\nFilter tasks:");
+        System.out.println("1. Filter by status (Completed, In progress, Not completed)");
+        System.out.println("2. Filter by priority range (e.g. 3 to 7)");
+        int choice = getChoiceFrom1To2();
+        switch (choice) {
+            case 1 -> filterByStatus();
+            case 2 -> filterByPriorityRange();
         }
     }
-}
 
-public  boolean checkAndWarnIfListEmpty(TaskManager manager) {
-    if (InputValidator.isTaskListEmpty(manager)) {
-        System.out.println("Task list is empty, please add some tasks\n");
-        return true;
+    private void filterByPriorityRange() {
+            System.out.println("Enter minimum priority: ");
+            int min = readValidPriority();
+            System.out.print("Enter maximum priority: ");
+            int max = readValidPriority();
+            if (min > max) {
+                System.out.println("Minimum priority cannot be greater than maximum priority.");
+                return;
+            }
+            List<Task> filtered = manager.filterByPriorityRange(min, max);
+            if (filtered.isEmpty()) {
+                System.out.println("No tasks found in this priority range.");
+            } else {
+                System.out.println("\nTasks with priority from " + min + " to " + max + ":");
+                for (int i = 0; i < filtered.size(); i++) {
+                    System.out.println((i + 1) + ". " + filtered.get(i));
+                }
+                System.out.println();
+            }
+
     }
-    return false;
-}
+
+    private void filterByStatus() {
+        while (true) {
+            System.out.print("Enter status (NOT_COMPLETED, IN_PROGRESS, COMPLETED): ");
+            String input = sc.nextLine();
+            try {
+                Status status = Status.valueOf(input.trim().toUpperCase());
+                List<Task> filtered = manager.filterByStatus(status);
+                if (filtered.isEmpty()) {
+                    System.out.println("No tasks with this status.");
+                } else {
+                    System.out.println("\nTasks with status: " + status);
+                    for (int i = 0; i < filtered.size(); i++) {
+                        System.out.println((i + 1) + ". " + filtered.get(i));
+                    }
+                    System.out.println();
+                }
+                break;
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid status. Try again.\n");
+            }
+        }
+
+    }
+
+    private void changeTaskStatusUI() {
+        if (checkAndWarnIfListEmpty(manager)) {
+            return;
+        }
+        while (true) {
+            System.out.print("Enter the number of the task to update status: ");
+            int index = sc.nextInt() - 1;
+            sc.nextLine();
+            List<Task> taskList = manager.getTaskList();
+            if (InputValidator.isIndexValid(index, taskList)) {
+                while (true) {
+                    System.out.print("Enter new status (NOT_COMPLETED, IN_PROGRESS, COMPLETED): ");
+                    String input = sc.nextLine();
+                    try {
+                        Status newStatus = Status.valueOf(input.trim().toUpperCase());
+                        Task updatedTask = taskList.get(index);
+                        manager.updateStatus(index, newStatus);
+                        System.out.println("\nTask updated:");
+                        System.out.println("Name: " + updatedTask.getName());
+                        System.out.println("Priority: " + updatedTask.getPriority());
+                        System.out.println("Status: " + newStatus.getDescription() + "\n");
+                        break;
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Invalid status. Try again.\n");
+                    }
+                }
+                break;
+            } else {
+                System.out.println("Invalid index. Try again.\n");
+            }
+        }
+    }
+
+    public boolean checkAndWarnIfListEmpty(TaskManager manager) {
+        if (InputValidator.isTaskListEmpty(manager)) {
+            System.out.println("Task list is empty, please add some tasks\n");
+            return true;
+        }
+        return false;
+    }
 
 
 }
