@@ -1,13 +1,12 @@
 package to_do_list.ui;
 
 
-import to_do_list.comparators.TaskDateComparator;
-import to_do_list.comparators.TaskPriorityComparator;
 import to_do_list.util.InputValidator;
 import to_do_list.model.Status;
 import to_do_list.model.Task;
 import to_do_list.service.TaskManager;
 
+import java.util.Comparator;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
@@ -74,8 +73,8 @@ public class ConsoleUI {
             return;
         }
         Map<Status, Long> counters = manager.countByStatus();
-        double avgPriority           = manager.averagePriority();
-        Map<Status, List<Task>> map  = manager.groupByStatus();
+        double avgPriority = manager.averagePriority();
+        Map<Status, List<Task>> map = manager.groupByStatus();
         System.out.println("\nTask statistics:");
         for (Status s : Status.values()) {
             long count = counters.getOrDefault(s, 0L);
@@ -87,13 +86,15 @@ public class ConsoleUI {
             System.out.println(s.getDescription() + " (" + list.size() + "):");
             if (list.isEmpty()) {
                 System.out.println("  -- no tasks --");
-            } else {
-                for (int i = 0; i < list.size(); i++) {
-                    System.out.println("  " + (i + 1) + ". " + list.get(i));
-                }
+                return;
             }
-            System.out.println();
+
+            for (int i = 0; i < list.size(); i++) {
+                System.out.println("  " + (i + 1) + ". " + list.get(i));
+            }
         }
+        System.out.println();
+
     }
 
     private void findTaskUI() {
@@ -109,13 +110,15 @@ public class ConsoleUI {
         List<Task> foundTask = manager.searchByKeyword(keyword);
         if (foundTask.isEmpty()) {
             System.out.println("No tasks found for \"" + keyword + "\".\n");
-        } else {
+            return;
+        } else
+
             System.out.println("\nTasks containing \"" + keyword + "\":");
-            for (int i = 0; i < foundTask.size(); i++) {
-                System.out.println((i + 1) + ". " + foundTask.get(i));
-            }
-            System.out.println();
+        for (int i = 0; i < foundTask.size(); i++) {
+            System.out.println((i + 1) + ". " + foundTask.get(i));
         }
+        System.out.println();
+
     }
 
 
@@ -204,20 +207,22 @@ public class ConsoleUI {
         System.out.println("\nWhat do you want to edit?");
         System.out.println("1. Task name");
         System.out.println("2. Task priority");
-        int editChoice = getChoiceFrom1To2();
+        int editChoice = getEditChoice();
         switch (editChoice) {
             case 1 -> renameTask(taskToEdit);
             case 2 -> updatePriority(taskToEdit);
         }
     }
 
-    private int getChoiceFrom1To2() {
+    private int getEditChoice() {
         while (true) {
             System.out.print("Enter your choice: ");
             try {
                 int editChoice = sc.nextInt();
                 sc.nextLine();
-                if (editChoice == 1 || editChoice == 2) return editChoice;
+                if (editChoice == 1 || editChoice == 2) {
+                    return editChoice;
+                }
                 System.out.println("Invalid choice. Try again.");
             } catch (InputMismatchException e) {
                 System.out.println("Please enter a number (1 or 2).");
@@ -241,10 +246,10 @@ public class ConsoleUI {
     }
 
     private void updatePriority(Task taskToEdit) {
-            System.out.print("Enter new priority: ");
-            int newPriority = readValidPriority();
-            taskToEdit.setPriority(newPriority);
-            System.out.println("\nPriority updated:\n" + taskToEdit + "\n");
+        System.out.print("Enter new priority: ");
+        int newPriority = readValidPriority();
+        taskToEdit.setPriority(newPriority);
+        System.out.println("\nPriority updated:\n" + taskToEdit + "\n");
     }
 
     private int readValidPriority() {
@@ -272,11 +277,11 @@ public class ConsoleUI {
         System.out.println("\nShow all tasks with sorting:");
         System.out.println("1. By priority (descending)");
         System.out.println("2. By date (ascending)");
-        int choice = getChoiceFrom1To2();
+        int choice = getEditChoice();
         List<Task> sortedList = manager.getTaskList();
         switch (choice) {
-            case 1 -> sortedList.sort(new TaskPriorityComparator());
-            case 2 -> sortedList.sort(new TaskDateComparator());
+            case 1 -> sortedList.sort(Comparator.comparingInt(Task::getPriority));
+            case 2 -> sortedList.sort(Comparator.comparing(Task::getCreationTime));
             default -> {
                 System.out.println("Invalid choice. Try again.");
                 return;
@@ -296,7 +301,7 @@ public class ConsoleUI {
         System.out.println("\nFilter tasks:");
         System.out.println("1. Filter by status (Completed, In progress, Not completed)");
         System.out.println("2. Filter by priority range (e.g. 3 to 7)");
-        int choice = getChoiceFrom1To2();
+        int choice = getEditChoice();
         switch (choice) {
             case 1 -> filterByStatus();
             case 2 -> filterByPriorityRange();
@@ -304,24 +309,25 @@ public class ConsoleUI {
     }
 
     private void filterByPriorityRange() {
-            System.out.println("Enter minimum priority: ");
-            int min = readValidPriority();
-            System.out.print("Enter maximum priority: ");
-            int max = readValidPriority();
-            if (min > max) {
-                System.out.println("Minimum priority cannot be greater than maximum priority.");
-                return;
-            }
-            List<Task> filtered = manager.filterByPriorityRange(min, max);
-            if (filtered.isEmpty()) {
-                System.out.println("No tasks found in this priority range.");
-            } else {
-                System.out.println("\nTasks with priority from " + min + " to " + max + ":");
-                for (int i = 0; i < filtered.size(); i++) {
-                    System.out.println((i + 1) + ". " + filtered.get(i));
-                }
-                System.out.println();
-            }
+        System.out.println("Enter minimum priority: ");
+        int min = readValidPriority();
+        System.out.print("Enter maximum priority: ");
+        int max = readValidPriority();
+        if (min > max) {
+            System.out.println("Minimum priority cannot be greater than maximum priority.");
+            return;
+        }
+        List<Task> filtered = manager.filterByPriorityRange(min, max);
+        if (filtered.isEmpty()) {
+            System.out.println("No tasks found in this priority range.");
+            return;
+        }
+        System.out.println("\nTasks with priority from " + min + " to " + max + ":");
+        for (int i = 0; i < filtered.size(); i++) {
+            System.out.println((i + 1) + ". " + filtered.get(i));
+        }
+        System.out.println();
+
 
     }
 
@@ -334,13 +340,15 @@ public class ConsoleUI {
                 List<Task> filtered = manager.filterByStatus(status);
                 if (filtered.isEmpty()) {
                     System.out.println("No tasks with this status.");
-                } else {
-                    System.out.println("\nTasks with status: " + status);
-                    for (int i = 0; i < filtered.size(); i++) {
-                        System.out.println((i + 1) + ". " + filtered.get(i));
-                    }
-                    System.out.println();
+                    return;
                 }
+
+                System.out.println("\nTasks with status: " + status.getDescription());
+                for (int i = 0; i < filtered.size(); i++) {
+                    System.out.println((i + 1) + ". " + filtered.get(i));
+                }
+                System.out.println();
+
                 break;
             } catch (IllegalArgumentException e) {
                 System.out.println("Invalid status. Try again.\n");
